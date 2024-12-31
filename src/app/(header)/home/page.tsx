@@ -1,10 +1,11 @@
 "use client";
 import { useSession } from "next-auth/react";
-
-const DashboardPage = () => {
+import React from "react";
+const HomePage = () => {
   const { data: session, status } = useSession();
+
   console.log(session, status);
-  return <div>Dashboard</div>;
+  return <div>Home</div>;
 };
 
-export default DashboardPage;
+export default HomePage;
