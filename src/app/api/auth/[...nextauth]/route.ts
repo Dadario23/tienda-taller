@@ -64,45 +64,50 @@ export const authOptions: AuthOptions = {
 
   callbacks: {
     async signIn({ user, account, profile }) {
-      try {
-        await connectDB();
+      await connectDB();
 
-        console.log("SignIn Callback - Incoming User:", user);
-        console.log("SignIn Callback - Account Provider:", account?.provider);
-        console.log("SignIn Callback - Profile Data:", profile);
-
-        if (account?.provider === "credentials") {
-          // Completa los datos del usuario al usar credenciales
-          const existingUser = await User.findById(user.id); // Busca por ID ya que viene del token
-          if (existingUser) {
-            console.log("SignIn Callback - Existing User Found:", existingUser);
-            user.email = existingUser.email;
-            user.name = existingUser.fullname;
-            user.role = existingUser.role;
-            user.redirectTo =
-              existingUser.role === "user" ? "/home" : "/dashboard";
-          }
+      if (account?.provider === "google") {
+        const existingUser = await User.findOne({ email: user.email });
+        if (existingUser) {
+          user.role = existingUser.role;
+          user.redirectTo =
+            existingUser.role === "admin" ? "/dashboard" : "/home";
+        } else {
+          const newUser = await User.create({
+            email: profile?.email,
+            fullname: profile?.name,
+            provider: "google",
+            role: "user", // Rol predeterminado
+            image: profile?.picture,
+          });
+          user.role = newUser.role;
+          user.redirectTo = "/home";
         }
-
-        console.log("SignIn Callback - Final User Data:", user);
-        return true;
-      } catch (error) {
-        console.error("SignIn Callback - Error:", error);
-        return false;
+      } else {
+        // Lógica para usuarios con credenciales
+        const existingUser = await User.findById(user.id); // MongoDB ObjectId para credenciales
+        if (existingUser) {
+          user.role = existingUser.role;
+          user.redirectTo =
+            existingUser.role === "admin" ? "/dashboard" : "/home";
+        }
       }
+
+      return true;
     },
-    async jwt({ token, user }) {
+    async jwt({ token, user, account }) {
       if (user) {
-        token.id = user.id;
+        // Si el usuario es de Google, utiliza el ID del proveedor (sub)
+        token.id =
+          account?.provider === "google" ? user.id : user._id?.toString();
         token.email = user.email;
         token.name = user.name;
         token.role = user.role;
-        token.redirectTo = user.redirectTo || "/"; // Establece un valor predeterminado
+        token.redirectTo = user.redirectTo || "/";
       }
       return token;
     },
     async session({ session, token }) {
-      console.log("Session Callback - Token:", token); // <-- Log para inspeccionar token
       session.user = {
         id: token.id as string,
         email: token.email as string,
@@ -113,15 +118,17 @@ export const authOptions: AuthOptions = {
       // Valida que token.redirectTo sea una cadena antes de asignarlo
       session.redirectTo =
         typeof token.redirectTo === "string" ? token.redirectTo : undefined;
-      console.log("Session Callback - Session:", session);
+
       return session;
     },
   },
 
   pages: {
-    signIn: "/",
-    error: "/",
-    signOut: "/",
+    signIn: "/", // Página de inicio de sesión
+    error: "/", // Maneja errores en la misma página
+    signOut: "/", // Página de cierre de sesión
+    // La página de carga es el callback temporal
+    newUser: "/loading", // Redirige a una página intermedia
   },
 
   secret: process.env.NEXTAUTH_SECRET,

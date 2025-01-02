@@ -8,6 +8,7 @@ declare module "next-auth" {
       name: string;
       image?: string;
       role: string;
+      _id?: string; // Asegúrate de reflejarlo si usas _id en sesiones
     };
     provider: string; // Este campo está bien definido
     redirectTo?: string; // Asegúrate de que también sea opcional
@@ -20,6 +21,7 @@ declare module "next-auth" {
     image?: string;
     role: string;
     redirectTo?: string; // Agrega la propiedad redirectTo
+    _id?: string; // Incluye la propiedad _id como opcional
   }
 
   interface JWT {
