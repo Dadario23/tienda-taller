@@ -5,6 +5,7 @@ import { useRouter } from "next/navigation";
 import { useEffect } from "react";
 import { LoginForm } from "@/components/login-form";
 import { GalleryVerticalEnd } from "lucide-react";
+import { LoadingSpinner } from "@/components/spinner";
 
 const LoginPage = () => {
   const { data: session, status } = useSession();
@@ -23,7 +24,7 @@ const LoginPage = () => {
   if (status === "loading") {
     return (
       <div className="flex items-center justify-center min-h-screen">
-        Cargando...
+        <LoadingSpinner />
       </div>
     );
   }

@@ -1,5 +1,6 @@
 "use client";
 
+import { LoadingSpinner } from "@/components/spinner";
 import { useSession } from "next-auth/react";
 import { useRouter } from "next/navigation";
 import { useEffect } from "react";
@@ -20,7 +21,7 @@ const LoadingPage = () => {
 
   return (
     <div className="flex items-center justify-center min-h-screen">
-      Cargando...
+      <LoadingSpinner />
     </div>
   );
 };

@@ -13,7 +13,7 @@ const userSchema = new Schema(
     },
     password: {
       type: String,
-      select: false, // Excluye la contraseña por defecto
+      select: false,
     },
     fullname: {
       type: String,
@@ -23,15 +23,39 @@ const userSchema = new Schema(
     },
     provider: {
       type: String,
-      default: "credentials", // Puede ser "credentials", "google", etc.
+      default: "credentials",
     },
     image: {
       type: String,
     },
     role: {
       type: String,
-      enum: ["user", "admin", "technician", "reception"], // Roles disponibles
-      default: "user", // Rol predeterminado
+      enum: ["user", "admin", "technician", "reception"],
+      default: "user",
+    },
+    country: {
+      type: String,
+      default: "", // Valor inicial vacío
+    },
+    state: {
+      type: String,
+      default: "", // Valor inicial vacío
+    },
+    locality: {
+      type: String,
+      default: "", // Valor inicial vacío
+    },
+    address: {
+      type: String,
+      default: "", // Dirección inicial vacía
+    },
+    whatsapp: {
+      type: String,
+      default: "", // Número de WhatsApp inicial vacío
+    },
+    postalcode: {
+      type: String,
+      default: "", // codigo postal inicial vacío
     },
   },
   { timestamps: true }

@@ -9,7 +9,7 @@ export default function HeaderLayout({
   return (
     <div>
       <Providers>
-        <Navbar />
+        {/*  <Navbar /> */}
         {children}
       </Providers>
     </div>
